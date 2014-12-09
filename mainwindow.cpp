@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 MainWindow::~MainWindow() {
+    delete kernel;
     delete ui;
 }
 

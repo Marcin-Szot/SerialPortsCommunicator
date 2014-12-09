@@ -26,6 +26,7 @@ QStringList* KernelModule::currentlyAvailablePorts() {
 }
 
 void KernelModule::setBaudRate(QString baud_rate) {
+    qDebug() << "Setting baud rate: " << baud_rate;
     if(port != NULL) {
         port->setBaudRate(parseBoudRate(baud_rate));
     } else {
@@ -34,6 +35,7 @@ void KernelModule::setBaudRate(QString baud_rate) {
 }
 
 void KernelModule::setDataBits(QString data_bits) {
+    qDebug() << "Setting data bits: " << data_bits;
     if(port != NULL) {
         port->setDataBits(parseDataBits(data_bits));
     } else {
@@ -42,6 +44,7 @@ void KernelModule::setDataBits(QString data_bits) {
 }
 
 void KernelModule::setParity(QString parity) {
+    qDebug() << "Setting parity: " << parity;
     if(port != NULL) {
         port->setParity(parseParity(parity));
     } else {
@@ -50,6 +53,7 @@ void KernelModule::setParity(QString parity) {
 }
 
 void KernelModule::setStopBits(QString stop_bits) {
+    qDebug() << "Setting stop bits: " << stop_bits;
     if(port != NULL) {
         port->setStopBits(parseStopBits(stop_bits));
     } else {
@@ -58,18 +62,27 @@ void KernelModule::setStopBits(QString stop_bits) {
 }
 
 void KernelModule::setPort(QString portName) {
+    qDebug() << "Trying to open " << portName << " port.";
     QSerialPortInfo *portInfo = new QSerialPortInfo();
     QList<QSerialPortInfo> listOfPorts = portInfo->availablePorts();
     for(int i = 0; i < listOfPorts.length(); i++) {
         if(listOfPorts.at(i).portName() == portName) {
             port = new QSerialPort(listOfPorts.at(i));
+            if(!port->open(QIODevice::ReadWrite)) {
+                qDebug() << "[ERROR] Serial port could not be open.";
+            }
             break;
         }
 
         if(i == listOfPorts.length()) {
             //ERROR EXPLANATION
+            qDebug() << "[ERROR] No serial port named " << portName << " found.";
         }
     }
+}
+
+KernelModule::~KernelModule() {
+    port->close();
 }
 
 QSerialPort::BaudRate KernelModule::parseBoudRate(QString arg) {

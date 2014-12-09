@@ -4,6 +4,7 @@
 #include <QSerialPort>
 #include <QSerialPortInfo>
 #include <QStringList>
+#include <QDebug>
 
 class KernelModule
 {
@@ -15,6 +16,7 @@ public:
     void setParity(QString parity);
     void setStopBits(QString stop_bits);
     void setPort(QString portName);
+    ~KernelModule();
 
 private:
     KernelModule();
