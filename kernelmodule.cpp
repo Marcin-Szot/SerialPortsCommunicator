@@ -4,8 +4,7 @@ KernelModule::KernelModule() {
     port = NULL;
 }
 
-KernelModule* KernelModule::getKernel()
-{
+KernelModule* KernelModule::getKernel() {
     if(!isKernelExists) {
         isKernelExists = true;
         return new KernelModule();
@@ -23,6 +22,10 @@ QStringList* KernelModule::currentlyAvailablePorts() {
 
     delete portInfo;
     return list;
+}
+
+QSerialPort* KernelModule::getPort() {
+    return port;
 }
 
 void KernelModule::setBaudRate(QString baud_rate) {
@@ -65,8 +68,13 @@ void KernelModule::setPort(QString portName) {
     qDebug() << "Trying to open " << portName << " port.";
     QSerialPortInfo *portInfo = new QSerialPortInfo();
     QList<QSerialPortInfo> listOfPorts = portInfo->availablePorts();
+    delete portInfo;
     for(int i = 0; i < listOfPorts.length(); i++) {
         if(listOfPorts.at(i).portName() == portName) {
+            if(port != NULL) {
+                port->close();
+                delete port;
+            }
             port = new QSerialPort(listOfPorts.at(i));
             if(!port->open(QIODevice::ReadWrite)) {
                 qDebug() << "[ERROR] Serial port could not be open.";
@@ -83,6 +91,7 @@ void KernelModule::setPort(QString portName) {
 
 KernelModule::~KernelModule() {
     port->close();
+    delete port;
 }
 
 QSerialPort::BaudRate KernelModule::parseBoudRate(QString arg) {

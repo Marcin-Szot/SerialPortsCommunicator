@@ -26,6 +26,7 @@ private slots:
     void setParity(QString parity);
     void setStopBits(QString stop_bits);
     void setPort(QString portName);
+    void messageReceived();
 
 private:
     Ui::MainWindow *ui;

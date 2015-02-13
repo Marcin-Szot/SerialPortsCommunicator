@@ -12,16 +12,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ports = new AvailablePorts();
     ports->setModal(true);
+    connect(ports, SIGNAL(portIsChosen(QString)), this, SLOT(setPort(QString)));
 
     config = new Configuration();
     config->setModal(true);
-
     connect(config, SIGNAL(baudRateIsChosen(QString)), this, SLOT(setBaudRate(QString)));
     connect(config, SIGNAL(dataBitsAreChosen(QString)), this, SLOT(setDataBits(QString)));
     connect(config, SIGNAL(parityIsChosen(QString)), this, SLOT(setParity(QString)));
     connect(config, SIGNAL(stopBitsAreChosen(QString)), this, SLOT(setStopBits(QString)));
 
-    connect(ports, SIGNAL(portIsChosen(QString)), this, SLOT(setPort(QString)));
 }
 
 MainWindow::~MainWindow() {
@@ -56,4 +55,19 @@ void MainWindow::setStopBits(QString stop_bits) {
 
 void MainWindow::setPort(QString portName) {
     kernel->setPort(portName);
+    //it is possible that we should disconnect port from messageReceived() first
+    connect(kernel->getPort(),SIGNAL(readyRead()),this,SLOT(messageReceived()));
+}
+
+void MainWindow::messageReceived() {
+    QByteArray data = kernel->getPort()->readAll();
+    for(int i = 0; i < data.length(); i++) {
+        if((int)data.at(i) >=0 && (int)data.at(i) <= 32) {
+            //space
+            ui->textBrowser->append("[" + QString::number((int)data.at(i)) + "]");
+        }
+        else {
+            ui->textBrowser->append(data);
+        }
+    }
 }

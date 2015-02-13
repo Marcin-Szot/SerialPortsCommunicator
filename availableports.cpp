@@ -12,9 +12,11 @@ AvailablePorts::AvailablePorts(QWidget *parent) :
 
 void AvailablePorts::refresh(QStringList *list)
 {
+    ui->listWidget->clear();
     for(int i = 0; i < list->length(); i++) {
         ui->listWidget->addItem(list->at(i));
     }
+    delete list;
 }
 
 AvailablePorts::~AvailablePorts()
